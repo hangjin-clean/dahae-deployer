@@ -23,27 +23,39 @@ function shortProvince(x=''){
 }
 function buildPage(input){
  const service=serviceById(input.serviceId);
- const variant=Math.max(0,Number(input.variant||0))%Math.max(1,service.titleKeywords.length);
- const keyword=service.titleKeywords[variant]||service.name;
+ const variant=Math.max(0,Number(input.variant||0))%5;
+ const keyword=String(service.coreKeyword||service.name||'').trim();
  const province=String(input.region||'').trim();
  const district=String(input.district||'').trim();
  const dong=String(input.dong||'').trim();
  const pshort=shortProvince(province);
- const titlePatterns=[
-   `${dong} ${keyword} ${district} 청소업체 다해`,
-   `${dong} ${keyword} ${district} 홈클리닝 업체 비교`,
-   `${district} ${dong} ${keyword} 우리동네 청소업체`,
-   `${dong} ${keyword} ${pshort} ${district} 무료견적 비교`,
-   `${dong} ${keyword} 다해 홈클리닝 업체 비교견적`
+
+ // 핵심키워드는 제목마다 정확히 1회 중심에 두고, 5개 패턴만 순환합니다.
+ // "업체 업체", "청소 청소" 같은 기계적 중복을 피합니다.
+ const suffixes=[
+   '전문업체 비교',
+   '홈클리닝 업체 추천',
+   '비용 견적 비교',
+   '우리동네 청소업체',
+   '무료견적 업체 비교'
  ];
- const title=titlePatterns[variant%titlePatterns.length].replace(/\s+/g,' ').trim();
+ const titlePatterns=[
+   `${dong} ${keyword} ${district} ${suffixes[0]}`,
+   `${district} ${dong} ${keyword} ${suffixes[1]}`,
+   `${dong} ${keyword} ${pshort} ${district} ${suffixes[2]}`,
+   `${dong} ${keyword} ${suffixes[3]}`,
+   `${district} ${dong} ${keyword} ${suffixes[4]}`
+ ];
+ const title=titlePatterns[variant].replace(/\s+/g,' ').trim();
  const subs=(service.subkeywords||[]).slice(0,7);
- const intro=`${province} ${district} ${dong}에서 ${keyword}을 알아볼 때는 가격만 확인하기보다 작업 범위, 일정, 추가 비용 기준, 결제 조건을 함께 비교하는 것이 좋습니다. 같은 주거형태라도 창틀·주방·욕실·베란다 등 오염 상태와 필요한 작업 범위에 따라 견적은 달라질 수 있습니다. 다해는 간단한 정보를 입력하면 조건에 맞는 청소업체를 비교할 수 있도록 구성한 청소 견적 비교 플랫폼입니다.`;
- const work=`${keyword} 상담 시에는 ${subs.join(', ')} 등 필요한 범위를 먼저 정리해 두면 비교가 쉬워집니다. 업체별로 포함되는 작업과 제외되는 작업, 작업 인원, 예상 소요시간, 카드결제·세금계산서 가능 여부 등을 확인한 뒤 원하는 조건에 맞는 곳을 선택하세요. 다해는 무조건 가장 저렴한 곳보다 가격·작업범위·결제조건·업체 신뢰도를 함께 비교할 수 있도록 돕습니다.`;
+ const intro=`${province} ${district} ${dong}에서 ${keyword} 서비스를 알아볼 때는 가격만 확인하기보다 작업 범위, 일정, 추가 비용 기준과 업체 조건을 함께 비교하는 것이 좋습니다. 현장 상태와 필요한 작업 범위에 따라 견적은 달라질 수 있습니다. 다해는 간단한 정보를 입력하면 조건에 맞는 청소업체를 비교할 수 있도록 구성한 청소 견적 비교 플랫폼입니다.`;
+ const relatedText=subs.length?` 함께 비교해볼 관련 항목은 ${subs.join(', ')} 등이 있습니다.`:'';
+ const work=`${keyword} 상담 시에는 필요한 작업 범위를 먼저 정리해 두면 비교가 쉬워집니다.${relatedText} 업체별 포함·제외 작업, 예상 소요시간, 결제 조건 등을 확인한 뒤 원하는 조건에 맞는 곳을 선택하세요. 다해는 무조건 가장 저렴한 곳보다 가격·작업범위·결제조건·업체 신뢰도를 함께 비교할 수 있도록 돕습니다.`;
  const path=`/published/${slug(pshort)}/${slug(district)}/${slug(dong)}/${service.slug}/v${variant+1}-${hash(province+'|'+district+'|'+dong+'|'+service.id+'|'+variant)}`;
  const site=String(process.env.SITE_URL||'https://dahae-clean.netlify.app').replace(/\/$/,'');
  return {
-   id:hash(path), region:province,district,area:dong,dong,serviceId:service.id,serviceName:service.name,serviceSlug:service.slug,
+   id:hash(path),region:province,district,area:dong,dong,
+   category:service.category||'홈클리닝',serviceId:service.id,serviceName:service.name,serviceSlug:service.slug,
    variant,keyword,title,
    description:`${district} ${dong} ${keyword} 비교. 우리동네에서 가까운 곳 우선, 최대 5곳 무료 견적 비교.`,
    intro,work,subkeywords:subs,

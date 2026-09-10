@@ -1,11 +1,10 @@
-const {esc}=require('./_shared');
+const {esc,blobStore}=require('./_shared');
 
 exports.handler=async function(event){
  try{
    const raw=(event.queryStringParameters||{}).path||'';
    const path='/' + String(raw).replace(/^\/+/,'');
-   const {getStore}=await import('@netlify/blobs');
-   const pages=getStore({name:'dahae-published-pages',consistency:'strong'});
+const pages=await blobStore('dahae-published-pages');
    let p=await pages.get(`page/${encodeURIComponent(path)}`,{type:'json'});
    if(!p){
      try{p=await pages.get(`page/${encodeURIComponent(decodeURIComponent(path))}`,{type:'json'})}catch(e){}

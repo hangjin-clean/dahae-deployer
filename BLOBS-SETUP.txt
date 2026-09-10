@@ -1,0 +1,10 @@
+# 다해 2호 Netlify Blobs 인증 패치
+
+기존 지역/113개 키워드/제목 3개/랜딩/커서는 변경하지 않습니다.
+
+Netlify 환경변수 필수:
+- BLOBS_SITE_ID = dahae-clean 사이트의 Site ID
+- BLOBS_TOKEN = Netlify Personal Access Token
+
+대체 호환:
+- NETLIFY_SITE_ID / NETLIFY_TOKEN 이 이미 있으면 자동 사용합니다.

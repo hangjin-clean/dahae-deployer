@@ -1,12 +1,11 @@
-const {auth}=require('./_shared');
+const {auth,blobStore}=require('./_shared');
 const KEY=String(process.env.INDEXNOW_KEY||'').trim();
 exports.handler=async function(event){
  if(!auth(event)){console.log('Unauthorized IndexNow');return}
  let p={};try{p=JSON.parse(event.body||'{}')}catch(e){return}
  const id=p.id||('idx-'+Date.now());
- const {getStore}=await import('@netlify/blobs');
- const manifests=getStore({name:'dahae-publish-manifests',consistency:'strong'});
- const status=getStore({name:'dahae-indexnow-status',consistency:'strong'});
+const manifests=await blobStore('dahae-publish-manifests');
+ const status=await blobStore('dahae-indexnow-status');
  let st={id,status:'running',processed:0,total:0,batch:0,batches:0,failed:0,createdAt:new Date().toISOString()};
  const save=()=>status.setJSON(`status/${id}`,st);
  try{

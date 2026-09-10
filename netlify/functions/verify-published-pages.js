@@ -1,9 +1,8 @@
-const {json,auth}=require('./_shared');
+const {json,auth,blobStore}=require('./_shared');
 exports.handler=async function(event){
  if(!auth(event))return json(401,{error:'관리자 인증이 필요합니다.'});
  try{
-   const {getStore}=await import('@netlify/blobs');
-   const m=getStore({name:'dahae-publish-manifests',consistency:'strong'});
+const m=await blobStore('dahae-publish-manifests');
    const latest=await m.get('latest',{type:'json'});
    const urls=(latest&&latest.urls)||[];if(!urls.length)throw new Error('공개 URL이 없습니다.');
    const sample=even(urls,Math.min(10,urls.length));

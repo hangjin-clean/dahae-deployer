@@ -1,8 +1,7 @@
-const {json,auth}=require('./_shared');
+const {json,auth,blobStore}=require('./_shared');
 exports.handler=async function(event){
  if(!auth(event))return json(401,{error:'관리자 인증이 필요합니다.'});
- const {getStore}=await import('@netlify/blobs');
- const s=getStore({name:'dahae-bulk-state',consistency:'strong'});
+const s=await blobStore('dahae-bulk-state');
  if(event.httpMethod==='GET'){
    const d=await s.get('cursor',{type:'json'})||{cursor:0,updatedAt:null};return json(200,d);
  }

@@ -1,15 +1,14 @@
-const {auth}=require('./_shared');
+const {auth,blobStore}=require('./_shared');
 
 exports.handler=async function(event){
  if(!auth(event)){console.log('Unauthorized publish');return}
  let p={};try{p=JSON.parse(event.body||'{}')}catch(e){return}
  const {publishId,jobIds}=p;
  if(!publishId||!Array.isArray(jobIds)||!jobIds.length)return;
- const {getStore}=await import('@netlify/blobs');
- const jobs=getStore({name:'dahae-generation-jobs',consistency:'strong'});
- const pages=getStore({name:'dahae-published-pages',consistency:'strong'});
- const status=getStore({name:'dahae-bulk-publish',consistency:'strong'});
- const manifests=getStore({name:'dahae-publish-manifests',consistency:'strong'});
+const jobs=await blobStore('dahae-generation-jobs');
+ const pages=await blobStore('dahae-published-pages');
+ const status=await blobStore('dahae-bulk-publish');
+ const manifests=await blobStore('dahae-publish-manifests');
 
  let state={id:publishId,status:'collecting',phase:'collecting',total:0,processed:0,failed:0,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
  const save=async()=>{state.updatedAt=new Date().toISOString();await status.setJSON(`publish/${publishId}`,state)};

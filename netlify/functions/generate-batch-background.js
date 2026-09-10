@@ -1,4 +1,4 @@
-const {auth,buildPage}=require('./_shared');
+const {auth,buildPage,blobStore}=require('./_shared');
 
 exports.handler=async function(event){
  let payload={}; let store=null; let job=null;
@@ -7,9 +7,7 @@ exports.handler=async function(event){
    try{payload=JSON.parse(event.body||'{}')}catch(e){throw new Error('요청 데이터 JSON 오류')}
    const {jobId,region,targets,serviceId}=payload;
    if(!jobId||!region||!Array.isArray(targets)||!targets.length||!serviceId)throw new Error('생성 요청 필수값이 없습니다.');
-
-   const {getStore}=await import('@netlify/blobs');
-   store=getStore({name:'dahae-generation-jobs',consistency:'strong'});
+store=await blobStore('dahae-generation-jobs');
    job={
      id:jobId,status:'running',region,serviceId,total:targets.length,completed:0,failed:0,
      createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),

@@ -1,11 +1,10 @@
-const {json,auth}=require('./_shared');
+const {json,auth,blobStore}=require('./_shared');
 exports.handler=async function(event){
  if(!auth(event))return json(401,{error:'관리자 인증이 필요합니다.'});
  const id=(event.queryStringParameters||{}).id;
  if(!id)return json(400,{error:'job id가 없습니다.'});
  try{
-   const {getStore}=await import('@netlify/blobs');
-   const store=getStore({name:'dahae-generation-jobs',consistency:'strong'});
+const store=await blobStore('dahae-generation-jobs');
    const data=await store.get(`jobs/${id}`,{type:'json',consistency:'strong'});
    if(!data)return json(404,{error:'작업을 찾을 수 없습니다.'});
    return json(200,data);

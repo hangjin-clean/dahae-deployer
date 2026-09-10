@@ -1,6 +1,6 @@
+const {blobStore}=require('./_shared');
 exports.handler=async function(){
- const {getStore}=await import('@netlify/blobs');
- const m=getStore({name:'dahae-publish-manifests',consistency:'strong'});
+const m=await blobStore('dahae-publish-manifests');
  const latest=await m.get('latest',{type:'json'});
  const site=String(process.env.SITE_URL||'https://dahae-clean.netlify.app').replace(/\/$/,'');
  const urls=[site+'/',...((latest&&latest.urls)||[])];

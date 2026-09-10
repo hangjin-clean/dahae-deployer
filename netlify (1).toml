@@ -1,0 +1,43 @@
+[build]
+command = "node scripts/build-regions.js"
+publish = "public"
+functions = "netlify/functions"
+
+[functions]
+node_bundler = "esbuild"
+
+[[headers]]
+for = "/admin.html"
+  [headers.values]
+  Cache-Control = "no-store"
+  X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+for = "/.netlify/functions/*"
+  [headers.values]
+  Cache-Control = "no-store"
+
+# 정상 발행 URL
+# published-page 함수는 Blob 키를 /published/... 전체 경로로 찾으므로
+# :splat 앞에 /published/ 를 반드시 붙여 전달합니다.
+[[redirects]]
+from = "/published/*"
+to = "/.netlify/functions/published-page?path=/published/:splat"
+status = 200
+force = true
+
+# 예전에 잘못 생성된 /app/published/... URL도 같은 페이지로 호환
+[[redirects]]
+from = "/app/published/*"
+to = "/.netlify/functions/published-page?path=/published/:splat"
+status = 200
+force = true
+
+[functions."generate-batch-background"]
+background = true
+
+[functions."publish-mass-background"]
+background = true
+
+[functions."indexnow-background"]
+background = true

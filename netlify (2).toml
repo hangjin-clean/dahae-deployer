@@ -1,0 +1,30 @@
+[build]
+command = "node scripts/build-regions.js"
+publish = "public"
+functions = "netlify/functions"
+
+[functions]
+node_bundler = "esbuild"
+
+[[headers]]
+for = "/admin.html"
+  [headers.values]
+  Cache-Control = "no-store"
+  X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+for = "/.netlify/functions/*"
+  [headers.values]
+  Cache-Control = "no-store"
+
+# /published/* 라우팅은 published-route.mjs의 config.path가 직접 담당합니다.
+# 기존 query-string rewrite는 제거합니다.
+
+[functions."generate-batch-background"]
+background = true
+
+[functions."publish-mass-background"]
+background = true
+
+[functions."indexnow-background"]
+background = true

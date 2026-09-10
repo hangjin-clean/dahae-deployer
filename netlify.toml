@@ -31,3 +31,12 @@
   to = "/.netlify/functions/sitemap"
   status = 200
   force = true
+
+[functions."generate-batch-background"]
+  background = true
+
+[functions."publish-mass-background"]
+  background = true
+
+[functions."indexnow-background"]
+  background = true

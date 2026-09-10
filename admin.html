@@ -84,7 +84,26 @@ async function tick(){
 }
 function counts(){const bs=bulk?.batches||[];return {total:bs.reduce((n,b)=>n+b.total,0),done:bs.reduce((n,b)=>n+b.completed,0),fail:bs.reduce((n,b)=>n+b.failed+(b.status==='failed-start'?b.total:0),0),run:bs.filter(b=>b.status==='running').length,wait:bs.filter(b=>b.status==='queued').length}}
 function renderBulk(){if(!bulk)return;const c=counts(),pct=c.total?Math.round((c.done+c.fail)/c.total*100):0;$('bulkProgress').style.width=pct+'%';$('bulkText').textContent=`${bulk.status==='generated'?'생성 완료':bulk.status==='published'?'공개 완료':bulk.status==='publishing'?'Netlify Blobs 직접 공개중':'고속 생성중'} · ${c.done}/${c.total} (${pct}%)`;$('bulkSummary').innerHTML=`<span class="pill">전체 ${c.total}</span><span class="pill">완료 ${c.done}</span><span class="pill bad">실패 ${c.fail}</span><span class="pill">실행중 배치 ${c.run}</span><span class="pill warn">대기 배치 ${c.wait}</span>`;const err=bulk.batches.find(b=>b.error);$('bulkJobs').textContent=`배치 ${bulk.batches.filter(b=>b.status==='completed').length}/${bulk.batches.length} 완료 · 2호 전용 Netlify Blobs 직접 공개 방식${err?' · 오류: '+err.error:''}`;showSamples();}
-function showSamples(){if(!bulk)return;const done=bulk.batches.filter(b=>b.status==='completed').slice(0,4);$('results').innerHTML=done.length?done.map(b=>`<div class="result"><b>${b.region} · ${SERVICES.find(x=>x.id===b.serviceId)?.name||''}</b><div class="small">${b.completed}/${b.total} 생성완료</div></div>`).join(''):'<div class="small">생성중...</div>'}
+async function showSamples(){
+ if(!bulk)return;
+ const done=bulk.batches.filter(b=>b.status==='completed').slice(0,12);
+ if(!done.length){$('results').innerHTML='<div class="small">생성중...</div>';return;}
+ const cards=[];
+ for(const b of done){
+   try{
+     const r=await fetch('/.netlify/functions/job-status?id='+encodeURIComponent(b.jobId),{headers:headers(),cache:'no-store'});
+     if(!r.ok)continue;
+     const d=await r.json();
+     const pages=(d.items||[]).filter(x=>x.status==='completed'&&x.page).map(x=>x.page);
+     for(const p of pages){
+       cards.push(`<div class="result"><b>${p.title||''}</b><div class="small">${p.region||''} ${p.district||''} ${p.area||''} · ${p.serviceName||''}</div><div class="small" style="margin-top:6px">${p.description||''}</div></div>`);
+       if(cards.length>=20)break;
+     }
+     if(cards.length>=20)break;
+   }catch(e){}
+ }
+ $('results').innerHTML=cards.length?cards.join(''):'<div class="small">실제 생성 제목을 불러오는 중...</div>';
+}
 function save(){if(bulk)localStorage.setItem('dahaeBulkActiveV1',JSON.stringify(bulk))}
 function stopBulk(){stopped=true;if(timer)clearInterval(timer);timer=null;if(bulk)bulk.status='paused';save();renderBulk()}
 function resetWork(){if(timer)clearInterval(timer);timer=null;stopped=false;bulk=null;localStorage.removeItem('dahaeBulkActiveV1');$('bulkProgress').style.width='0';$('bulkText').textContent='대기중';$('bulkSummary').innerHTML='';$('bulkJobs').innerHTML=''}

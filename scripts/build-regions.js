@@ -4,11 +4,9 @@ const path=require('path');
 const SOURCE='https://raw.githubusercontent.com/vuski/admdongkor/master/ver20260701/HangJeongDong_ver20260701.geojson';
 const OUT=path.join(__dirname,'..','public','nationwide_regions.json');
 
-// 1호 운영 범위와 동일하게 제주를 제외한 16개 시·도
-const ALLOWED=new Set([
- '서울특별시','부산광역시','대구광역시','인천광역시','광주광역시','대전광역시','울산광역시','세종특별자치시',
- '경기도','강원특별자치도','충청북도','충청남도','전북특별자치도','전라남도','경상북도','경상남도'
-]);
+// 2026-07 원본은 광주+전남 통합이 반영되어 '전남광주통합특별시'가 하나의 시도로 들어갑니다.
+// 고정 명칭 목록으로 걸러내면 광주/전남 2개가 빠져 14/16 오류가 나므로,
+// 원본 GeoJSON의 실제 시도명을 그대로 사용하고 마지막에 '16개'만 검증합니다.
 
 function val(p,keys){
  for(const k of keys){const v=p&&p[k];if(v!==undefined&&v!==null&&String(v).trim())return String(v).trim()}
@@ -35,7 +33,7 @@ async function run(){
  for(const f of features){
    const p=f.properties||{}, parts=splitAdm(p);
    let province=val(p,['sidonm','sido_nm','CTP_KOR_NM']) || parts[0] || '';
-   if(!ALLOWED.has(province))continue;
+   if(!province)continue;
 
    let district=val(p,['sggnm','sgg_nm','SIG_KOR_NM']);
    let dong=val(p,['emd_nm','emdName','adm_nm','name']);
@@ -74,9 +72,18 @@ async function run(){
    }
  }
 
+ const sourceProvinceNames=[...new Set(features.map(f=>{
+   const p=f.properties||{},parts=splitAdm(p);
+   return val(p,['sidonm','sido_nm','CTP_KOR_NM']) || parts[0] || '';
+ }).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
+ if(sourceProvinceNames.length!==16){
+   throw new Error(`전국 원본 시도 수 검증 실패: ${sourceProvinceNames.length}/16 · ${sourceProvinceNames.join(', ')}`);
+ }
  const provinceNames=Object.keys(provinces);
  const districts=provinceNames.reduce((n,p)=>n+Object.keys(provinces[p]).length,0);
- if(provinceNames.length!==16)throw new Error(`전국 지역 검증 실패: 시도 ${provinceNames.length}/16`);
+ if(provinceNames.length!==16){
+   throw new Error(`전국 지역 생성 검증 실패: 시도 ${provinceNames.length}/16 · ${provinceNames.join(', ')}`);
+ }
  if(official<3000)throw new Error(`전국 지역 검증 실패: 공식 읍면동 ${official}개`);
  const out={
    version:'20260701',source:SOURCE,generatedAt:new Date().toISOString(),

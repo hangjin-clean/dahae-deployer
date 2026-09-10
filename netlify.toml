@@ -1,33 +1,42 @@
 [build]
-  command = "node scripts/build-regions.js"
-  publish = "public"
-  functions = "netlify/functions"
+command = "node scripts/build-regions.js"
+publish = "public"
+functions = "netlify/functions"
 
 [functions]
-  node_bundler = "esbuild"
+node_bundler = "esbuild"
 
 [[headers]]
-  for = "/admin.html"
+for = "/admin.html"
   [headers.values]
-    Cache-Control = "no-store"
-    X-Robots-Tag = "noindex, nofollow"
+  Cache-Control = "no-store"
+  X-Robots-Tag = "noindex, nofollow"
 
 [[headers]]
-  for = "/.netlify/functions/*"
+for = "/.netlify/functions/*"
   [headers.values]
-    Cache-Control = "no-store"
+  Cache-Control = "no-store"
 
+# 정상 발행 URL
 [[redirects]]
-  from = "/published/*"
-  to = "/.netlify/functions/published-page?path=:splat"
-  status = 200
-  force = true
+from = "/published/*"
+to = "/.netlify/functions/published-page?path=:splat"
+status = 200
+force = true
+
+# 기존에 잘못 생성된 /app/published/... URL 호환용
+# 기존 100개 URL도 재생성 없이 바로 열리도록 published-page 함수로 연결합니다.
+[[redirects]]
+from = "/app/published/*"
+to = "/.netlify/functions/published-page?path=:splat"
+status = 200
+force = true
 
 [functions."generate-batch-background"]
-  background = true
+background = true
 
 [functions."publish-mass-background"]
-  background = true
+background = true
 
 [functions."indexnow-background"]
-  background = true
+background = true

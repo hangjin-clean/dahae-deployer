@@ -3,7 +3,13 @@ import path from "path";
 
 const cwd = process.cwd();
 const svc = JSON.parse(fs.readFileSync(path.join(cwd,"data","services.json"),"utf8"));
-const regions = JSON.parse(fs.readFileSync(path.join(cwd,"data","regions.json"),"utf8"));
+let regions = JSON.parse(fs.readFileSync(path.join(cwd,"data","regions.json"),"utf8"));
+try{
+  const nationwide=JSON.parse(fs.readFileSync(path.join(cwd,"public","nationwide_regions.json"),"utf8"));
+  if(nationwide?.provinces && Object.keys(nationwide.provinces).length){
+    regions=nationwide.provinces;
+  }
+}catch(e){}
 const cfg = JSON.parse(fs.readFileSync(path.join(cwd,"deploy-config.json"),"utf8"));
 const out = path.join(cwd,"dist");
 fs.rmSync(out,{recursive:true,force:true});
@@ -17,7 +23,15 @@ const slug=s=>encodeURIComponent(String(s).trim().replace(/\s+/g,"-"));
 const areas=[];
 for(const [metro,districts] of Object.entries(regions)){
   for(const [district,dongs] of Object.entries(districts)){
-    for(const dong of dongs) areas.push({metro,district,dong});
+    for(const row of dongs){
+      const dong=typeof row==="string"?row:String(row?.name||"").trim();
+      if(!dong) continue;
+      areas.push({
+        metro,district,dong,
+        alias:typeof row==="object"&&!!row.alias,
+        sourceAreas:typeof row==="object"?(row.sourceAreas||[dong]):[dong]
+      });
+    }
   }
 }
 const variants=[];

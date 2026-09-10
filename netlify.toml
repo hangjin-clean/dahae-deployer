@@ -20,7 +20,7 @@ for = "/.netlify/functions/*"
 # 정상 발행 URL
 [[redirects]]
 from = "/published/*"
-to = "/.netlify/functions/published-page?path=:splat"
+to = "/.netlify/functions/published-page?path=/published/:splat"
 status = 200
 force = true
 
@@ -28,7 +28,7 @@ force = true
 # 기존 100개 URL도 재생성 없이 바로 열리도록 published-page 함수로 연결합니다.
 [[redirects]]
 from = "/app/published/*"
-to = "/.netlify/functions/published-page?path=:splat"
+to = "/.netlify/functions/published-page?path=/published/:splat"
 status = 200
 force = true
 

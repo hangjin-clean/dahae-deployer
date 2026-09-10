@@ -1,0 +1,23 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>다해 대량배포 관리자</title><style>
+body{font-family:Arial,"Noto Sans KR",sans-serif;background:#f4f6f8;margin:0}.box{max-width:760px;margin:50px auto;background:white;padding:30px;border-radius:18px}
+h1{margin-top:0}.row{display:flex;gap:10px;flex-wrap:wrap}.preset button{padding:12px 18px}.run{width:100%;padding:16px;margin-top:18px;font-size:18px;font-weight:800}
+input{padding:12px;width:160px}.status{margin-top:18px;padding:14px;background:#f6f7f9;border-radius:10px;white-space:pre-wrap}
+</style></head><body><div class="box"><h1>다해 2호 대량배포</h1>
+<p>1호와 분리된 <b>dahae-deployer</b> 전용 관리자입니다.</p>
+<div class="preset row"><button onclick="setN(100)">테스트 100</button><button onclick="setN(5000)">5,000</button><button onclick="setN(8000)">8,000</button><button onclick="setN(10000)">10,000</button></div>
+<p>페이지 수 <input id="count" type="number" min="1" max="10000" value="100"></p>
+<button class="run" onclick="start()">배포 설정 커밋</button><div id="status" class="status">대기중</div>
+<script>
+function setN(n){document.getElementById('count').value=n}
+async function start(){
+ const n=Number(document.getElementById('count').value);
+ if(!Number.isInteger(n)||n<1||n>10000){alert('1~10000 사이 숫자를 입력하세요.');return}
+ if(!confirm(n.toLocaleString()+'페이지 배포 설정을 시작할까요?')) return;
+ const s=document.getElementById('status'); s.textContent='요청중...';
+ try{
+   const r=await fetch('/.netlify/functions/start-deploy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({count:n})});
+   const j=await r.json(); s.textContent=j.ok?('완료: '+j.message):('실패: '+(j.error||'unknown'));
+ }catch(e){s.textContent='실패: '+e.message}
+}
+</script></div></body></html>

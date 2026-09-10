@@ -1,0 +1,121 @@
+{
+  "brand": "다해",
+  "primary": [
+    {
+      "slug": "move-in-cleaning",
+      "name": "입주청소",
+      "variants": [
+        "아파트 입주청소",
+        "빌라 입주청소",
+        "주택 입주청소",
+        "원룸 입주청소",
+        "오피스텔 입주청소",
+        "신축아파트 입주청소",
+        "구축아파트 입주청소"
+      ]
+    },
+    {
+      "slug": "moving-cleaning",
+      "name": "이사청소",
+      "variants": [
+        "아파트 이사청소",
+        "빌라 이사청소",
+        "주택 이사청소",
+        "원룸 이사청소",
+        "오피스텔 이사청소"
+      ]
+    },
+    {
+      "slug": "occupied-cleaning",
+      "name": "거주청소",
+      "variants": [
+        "아파트 거주청소",
+        "빌라 거주청소",
+        "주택 거주청소",
+        "원룸 거주청소"
+      ]
+    },
+    {
+      "slug": "vacant-cleaning",
+      "name": "공실청소",
+      "variants": [
+        "아파트 공실청소",
+        "빌라 공실청소",
+        "원룸 공실청소",
+        "오피스텔 공실청소"
+      ]
+    },
+    {
+      "slug": "newborn-move-in",
+      "name": "신생아입주청소",
+      "variants": [
+        "신생아 입주청소",
+        "아기맞이 입주청소",
+        "신생아 가정 청소"
+      ]
+    },
+    {
+      "slug": "new-house-syndrome",
+      "name": "새집증후군",
+      "variants": [
+        "새집증후군 청소",
+        "신축집 냄새 관리",
+        "입주 전 실내 관리"
+      ]
+    },
+    {
+      "slug": "bathroom-cleaning",
+      "name": "화장실청소",
+      "variants": [
+        "욕실청소",
+        "화장실 대청소",
+        "욕실 물때청소"
+      ]
+    },
+    {
+      "slug": "kitchen-cleaning",
+      "name": "주방청소",
+      "variants": [
+        "주방 대청소",
+        "싱크대 청소",
+        "후드 주변 청소"
+      ]
+    },
+    {
+      "slug": "window-cleaning",
+      "name": "창틀청소",
+      "variants": [
+        "창틀청소",
+        "창문틀 청소",
+        "베란다 창틀청소"
+      ]
+    },
+    {
+      "slug": "balcony-cleaning",
+      "name": "베란다청소",
+      "variants": [
+        "베란다청소",
+        "다용도실 청소",
+        "발코니 청소"
+      ]
+    },
+    {
+      "slug": "aircon-cleaning",
+      "name": "에어컨청소",
+      "variants": [
+        "벽걸이 에어컨청소",
+        "스탠드 에어컨청소",
+        "가정용 에어컨청소"
+      ]
+    },
+    {
+      "slug": "mattress-cleaning",
+      "name": "매트리스청소",
+      "variants": [
+        "침대 매트리스청소",
+        "패브릭 침구청소",
+        "매트리스 위생관리"
+      ]
+    }
+  ]
+}

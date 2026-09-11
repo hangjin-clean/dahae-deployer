@@ -18,8 +18,6 @@ for = "/.netlify/functions/*"
   Cache-Control = "no-store"
 
 
-status = 200
-force = true
 
 [functions."generate-batch-background"]
 background = true

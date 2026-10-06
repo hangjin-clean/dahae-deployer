@@ -17,7 +17,11 @@ for = "/.netlify/functions/*"
   [headers.values]
   Cache-Control = "no-store"
 
-
+[[redirects]]
+from = "/sitemap.xml"
+to = "/.netlify/functions/sitemap"
+status = 200
+force = true
 
 [functions."generate-batch-background"]
 background = true
